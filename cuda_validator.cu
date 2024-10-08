@@ -9,7 +9,7 @@ __global__ void validation_gen(const unsigned int maxIdx, unsigned int* dataPtr)
   int index = threadIdx.x;
   int stride = blockDim.x;
   for (int idx = index; idx < maxIdx; idx += stride)
-      dataPtr[idx] = stride << 16 & index;
+      dataPtr[idx] = stride << 16 | index;
 }
 
 int main(int argc, char *argv[])
@@ -32,7 +32,7 @@ int main(int argc, char *argv[])
     auto stride = i & 0x7f;
     stride = stride << 16-5;
 
-    std::cout << "(" << std::dec << i << "): " << std::hex << dataPtr[i] << " -> " << stride << idx;
+    std::cout << "(" << std::dec << i << "): " << std::hex << dataPtr[i] << " -> " << stride << idx << " ";
     if(i % 4 == 0){
         std::cout << std::endl;
     }
