@@ -42,7 +42,7 @@ int main(int argc, char *argv[])
 //   cuEChk(cudaMalloc(&dataPtr, memSize));
 
   // Run kernel on 1M elements on the GPU
-  dev_tester<<<1, 256>>>(N, dataPtr);
+  dev_tester<<<1, 1>>>(N, dataPtr);
 
   // Wait for GPU to finish before accessing on host
   cuEChk(cudaDeviceSynchronize());
