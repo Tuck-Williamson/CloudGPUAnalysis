@@ -24,8 +24,8 @@ __global__ void validation_gen(const unsigned int maxIdx, unsigned int* dataPtr)
 int main(int argc, char *argv[])
 {
   unsigned int N = 256<<2;
-  const size_t memSize = N*sizeof(dataPtr[0]);
   unsigned int* dataPtr;
+  const size_t memSize = N*sizeof(dataPtr[0]);
 
   // Allocate Unified Memory - accessible from CPU or GPU
 //   cudaMallocManaged(&dataPtr, N*sizeof(dataPtr[0]));
@@ -37,7 +37,7 @@ int main(int argc, char *argv[])
   // Wait for GPU to finish before accessing on host
   cuEChk(cudaDeviceSynchronize());
 
-  uint16* hostPtr = (uint16*)malloc(memSize);
+  unsigned short* hostPtr = (unsigned short*)malloc(memSize);
   cuEChk(cudaMemcpy((void*)hostPtr, dataPtr, memSize, cudaMemcpyDeviceToHost));
 
   std::cout << std::hex;
