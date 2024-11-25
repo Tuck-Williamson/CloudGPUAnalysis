@@ -18,17 +18,15 @@ __device__ char* devMessage= "\t\tHello from GPU.\n";
 // Kernel function to add the elements of two arrays
 __global__ void dev_tester(int dummy)
 {
-  printf("Hello from thread: %d.\n", threadIdx.x);
-  printf("\tTest message: %s\n", devMessage);
-  printf("\tMessage Location: %p\n", devMessage);
-  printf("\tKernel Location: %p\n", &dev_tester);
-  printf("\tExecution Stack Location: %p\n", &dummy);
+    if(threadIdx.x == 0){
+        printf("Hello from thread: %d.\n", threadIdx.x);
+        printf("\tTest message: %s\n", devMessage);
+        printf("\tMessage Location: %p\n", devMessage);
+        printf("\tKernel Location: %p\n", dev_tester);
+        printf("\tExecution Stack Location: %p\n", &dummy);
+    }
 
-  unsigned short int* ptr = (unsigned short int*)&dev_tester;
-  printf("\tCode Location Dump: %p 0x- %04hx %04hx %04hx %04hx\n", &ptr, ptr[0]++, ptr[0]++, ptr[0]++, ptr[0]++);
-  printf("\tCode Location Dump: %p 0x- %04hx %04hx %04hx %04hx\n", &ptr, ptr[0]++, ptr[0]++, ptr[0]++, ptr[0]++);
-  printf("\tCode Location Dump: %p 0x- %04hx %04hx %04hx %04hx\n", &ptr, ptr[0]++, ptr[0]++, ptr[0]++, ptr[0]++);
-  printf("\tCode Location Dump: %p 0x- %04hx %04hx %04hx %04hx\n", &ptr, ptr[0]++, ptr[0]++, ptr[0]++, ptr[0]++);
+
 }
 
 int main(int argc, char *argv[])
