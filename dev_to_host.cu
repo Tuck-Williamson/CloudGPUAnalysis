@@ -12,7 +12,27 @@ void errChk(cudaError_t status, size_t line){
     }
 }
 
+struct DataStruct{
+    const char data[1024*1023];
+};
+
 __device__ char* devMessage= "\t\tHello from GPU.\n";
+
+__global__ void findOffsets(long *startOff, long *endOff){
+
+    DataStruct *data = (DataStruct*)alloca(sizeof(DataStruct));
+    printf("\tMessage Location: %p\n", devMessage);
+    printf("\tStack Location: %p\n", &startOff);
+
+    char testChar;
+    char* curPtr = devMessage;
+    uint jumpBy = 16;
+    while(1==1){
+        startOff[0]+=jumpBy;
+        testChar = curPtr[-startOff[0]];
+    }
+
+}
 
 //template <typename TK>
 #define TK unsigned int
@@ -21,8 +41,13 @@ __global__ void k(TK *d, size_t n){
   if(threadIdx.x == 0 && blockIdx.x == 0){
     printf("\tTest message: %s\n", devMessage);
     printf("\tMessage Location: %p\n", devMessage);
+    printf("\tGrid Dim: %d\n", gridDim.x);
+    printf("\tBlock Dim: %d\n", blockDim.x);
   }
-
+  else{
+    //printf(" %d.%d", threadIdx.x, blockIdx.x);
+  }
+  __brkpt();
   TK *myCode = (TK*)&devMessage[0];
   for (size_t i = blockIdx.x*blockDim.x+threadIdx.x; i < n; i+=gridDim.x*blockDim.x)
     d[i] = myCode[i];
@@ -71,14 +96,34 @@ void printMemChar(T *d, size_t n, uint numEleNLine){
 
 int main(){
 
+  long *startOff = 0;
+  long *endOff = 0;
+  cuEChk(cudaHostAlloc(&startOff, sizeof(startOff[0])*2, cudaHostAllocDefault));
+  endOff = &startOff[1];
+  startOff[0] = 0;
+  endOff[0] = 0;
+
+  findOffsets<<<1,1>>>(startOff, endOff);
+  cudaDeviceSynchronize();
+  printf("Start Offset: %ld.\n", startOff[0]);
+  printf("End Offset: %ld.\n", endOff[0]);
+  cuEChk(cudaDeviceSynchronize());
+  /*
+  */
+
+  //Allocate host pinned data buffer dest.
   unsigned int *d;
   size_t n = 1*1024;
-  cudaHostAlloc(&d, sizeof(d[0])*n, cudaHostAllocDefault);
+  cuEChk(cudaHostAlloc(&d, sizeof(d[0])*n, cudaHostAllocDefault));
+
   //k<<<160, 1024>>>(d, n);
   k<<<1, 1024>>>(d, n);
-  cudaDeviceSynchronize();
+  cuEChk(cudaDeviceSynchronize());
   std::cout << "Print before dev to host memcopy.\n";
-  printMemChar(d, n, 8);
+  //printMemChar(d, n, 8);
   std::cout << "\n\n";
-
+  //unsigned int *d1;
+  //cudaMalloc(&d1, sizeof(d[0])*n);
+  //cudaMemcpy(d, d1, sizeof(d[0])*n, cudaMemcpyDeviceToHost);
+  //printMem(d1, n);
 }

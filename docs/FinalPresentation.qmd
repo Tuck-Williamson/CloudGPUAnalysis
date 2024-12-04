@@ -1,0 +1,572 @@
+---
+title: "Analysis of GPU Malware Evidence in Cloud Computing."
+author:
+  - name: Thomas Williamson
+    affiliation: { -name: "College of Charleston" }
+institute: "College of Charleston"
+date: 2024-12-05
+format:
+  revealjs:
+    slide-number: true
+    preview-links: true
+    transition: zoom
+    transition-speed: fast
+    progress: true
+    theme: sky
+#    theme: moon
+#    theme: league
+#    theme: beige
+---
+
+# Background & Problem Statement
+
+
+:::: { .incremental}
+
+- Importance
+- Problem Statement
+- Research Abstract
+
+::::
+
+## Importance of the Research
+
+GPU based cloud computing is critical due to its ability to efficiently handle 
+computationally intensive tasks & has become indispensable across various fields.
+
+:::: {.columns}
+
+::: {.column .fragment .fade-right width="50%"}
+
+### AI & ML
+
+* Deep Learning
+* Training Large Models
+
+:::
+
+::: {.column .fragment .fade-left width="50%"}
+
+### Scientific Research
+
+* Computational Biology
+* Climate Modeling
+* High-Performance Computing
+
+:::
+
+::::
+
+## Background { transition="fade" transition-speed="fast"}
+
+### Security issues have been prevalent.
+
+:::: { .fade-right .incremental}
+
+1. paper TODO
+1. paper TODO
+1. paper TODO
+1. paper TODO
+
+::::
+
+## Background { transition="fade" transition-speed="fast"}
+
+### Cloud GPU Service Industry
+
+:::: { .incremental }
+
+  - Current market value ~3 **Billion**
+  - Projected to grow to ~50 **Billion** by 2032
+  - This does not account for the value of what the service is producing for the market's clients!
+
+::::
+
+
+## The Problem
+
+
+:::::::::: { .fragment .fade-down style="text-align:center"}
+Security Issues 
+::::::::::
+:::::::::: { .fragment .fade style="text-align:center"}
+**+** 
+::::::::::
+:::::::::: { .fragment .fade-up style="text-align:center"}
+Valuable assets & content.
+::::::::::
+
+:::: { .r-stack .absolute bottom="20%" width="100%"}
+:::: { .fragment .fade-in .r-fit-text style="text-align:center;color:red"}
+
+That makes the assets and 
+
+content a likely target.
+
+::::
+::::
+
+##  The Research Goal { transition="fade" transition-speed="fast"}
+
+:::: { .fragment .r-fit-text}
+
+Investigate the cloud based
+
+GPU computing environment 
+
+for signs of GPU based 
+
+malware.
+
+::::
+
+## The Research Goal - Concerns { transition="fade" transition-speed="fast"}
+
+To be clear, by investigating the GPU computing environment for signs of malware 
+what the research is attempting to study would be considered an
+
+:::: { .fragment .highlight-red }
+**information leak**.
+::::
+
+## The Research Goal - Concerns { transition="fade" transition-speed="fast"}
+
+:::: { .fragment .fade-up }
+### The data we want to study is:
+
+:::: { .incremental .fade-up }
+Data from prior service users or co-users.
+
++ GPU 'kernel' code.
++ GPU kernel state.
+  + Registers
+  + Stack
++ GPU memory contents.
+
+::::
+::::
+
+# Methodology
+
+:::: { .incremental .fade-up }
+
+* Data Gathering Approach
+* Overview of the technology.
+* Data Gathering Implementation
+* Results
+
+::::
+
+## Methodology {.hidden} 
+
+:::: { .incremental .fade-up }
+
+* Overview of the System
+* Overview of Host
+* Data Gathering Details
+
+::::
+
+## Methodology - Approach { transition="fade" transition-speed="fast"}
+
+Gather as Much Information As Possible 
+
+
+:::: { .r-fit-text}
+:::: { .incremental }
+
++ Host Information - cpu, memory size, temperature, computer name, kernel version ...
++ GPU Information - Driver Version, Tools Version, GPU type, GPU Memory ...
++ Compiled GPU Kernel Code for data gathering apparatus.
++ Get the raw data from the GPU to exfiltrate.
++ Generate validation data.
++ Capture validation data for verification later.
+
+::::
+::::
+
+:::: { .fragment }
+
+Zip it all up.
+::::
+
+:::: { .fragment }
+
+Hash the zip file.
+::::
+
+:::: { .fragment }
+
+Send the data to the central repository.
+
+::::
+
+## Overview - System { transition="fade" transition-speed="fast"}
+
+![A block diagram of a CPU-GPU computing model.](img.png)
+
+## Overview - Memory { transition="fade" transition-speed="fast"}
+
+
+![A Diagram of GPU 'Unified' Memory](img_3.png)
+
+```{.mermaid .hidden}
+%%| fig-cap: "A Diagram of GPU 'Unified' Memory"
+block-beta
+    columns 8
+
+    block:hm:8
+        columns 16
+        space:7
+        hml["Host Memory"]:2
+        space:7
+        1
+        2
+        3
+        4
+        5
+        6
+        7
+        8
+        9
+        10
+        11
+        12
+        13
+        14
+        15
+        16
+
+        space:5
+        %% block:s1b
+            s1<[" "]>(y)
+        %% end
+        space:2
+
+        %% block:s2b
+            s2<[" "]>(y)
+        %% end
+        %% block:s3b
+            s3<[" "]>(y)
+        %% end
+        space:2
+        
+        block:1:1
+            columns:1
+            a b c
+        end
+    end
+
+    space:1
+    block:gm:5
+        columns 10
+
+        g1["Private"]
+        g2["Private"]
+        g3["Private"]
+        u1["Universal"]
+        g4["Private"]
+        g5["Private"]
+        u2["Universal"]
+        u3["Universal"]
+        g6["Private"]
+        g7["Private"]
+
+        space:5
+        gml["GPU Memory"]
+        space:4
+    end
+    space:1
+
+%% u1 <==> 6
+style hml fill:#0000,stroke:#0000;
+style hm fill:#0000,stroke:#0000;
+style gml fill:#0000,stroke:#0000;    
+```
+
+## Methodology - Implementation { auto-animate=true transition="fade" transition-speed="fast"}
+
+Host vector:
+
+## Methodology - Implementation { visibility="uncounted" auto-animate=true transition="fade" transition-speed="fast"}
+
+Host vector:
+
+Allocate unified memory and read that.
+
+## Methodology - Implementation { visibility="uncounted" auto-animate=true transition="fade" transition-speed="fast"}
+
+Host vector:
+
+~~Allocate unified memory and read that.~~
+
+## Methodology - Implementation { visibility="uncounted" auto-animate=true transition="fade" transition-speed="fast"}
+
+Host vector:
+
+~~Allocate unified memory and read that.~~
+
+Use debugging tool `cuda-gdb`:
+
++ Create a core-dump file of GPU.
+
+## Methodology - Implementation { visibility="uncounted" auto-animate=true transition="fade" transition-speed="fast"}
+
+Host vector:
+
+~~Allocate unified memory and read that.~~
+
+Use debugging tool `cuda-gdb`:
+
++ ~~Create a core-dump file of GPU.~~ Works, but will only dump allocated memory.
+
+
+## Methodology - Implementation { visibility="uncounted" auto-animate=true transition="fade" transition-speed="fast"}
+
+Host vector:
+
+~~Allocate unified memory and read that.~~
+
+Use debugging tool `cuda-gdb`:
+
++ ~~Create a core-dump file of GPU.~~ Works, but will only dump allocated memory.
++ Manually inspect the data using CLI.
+
+## Methodology - Implementation { visibility="uncounted" auto-animate=true transition="fade" transition-speed="fast"}
+
+Host vector:
+
+~~Allocate unified memory and read that.~~
+
+Use debugging tool `cuda-gdb`:
+
++ ~~Create a core-dump file of GPU.~~ Works, but will only dump allocated memory.
++ ~~Manually inspect the data using CLI.~~ Again only gives access to what I have mapped.
+
+## Methodology - Implementation { visibility="uncounted" auto-animate=true transition="fade" transition-speed="fast"}
+
+~~Host vector:~~
+
+~~Use debugging tool `cuda-gdb`:~~
+
+GPU Kernel vector:
+
++ Try to get raw code. 
+
+## Methodology - Implementation { visibility="uncounted" auto-animate=true transition="fade" transition-speed="fast"}
+
+~~Host vector:~~
+
+~~Use debugging tool `cuda-gdb`:~~
+
+GPU Kernel vector:
+
++ ~~Try to get raw code via pointer addressing.~~ Code is unified mapped. 
+
+## Methodology - Implementation { visibility="uncounted" auto-animate=true transition="fade" transition-speed="fast"}
+
+~~Host vector:~~
+
+~~Use debugging tool `cuda-gdb`:~~
+
+GPU Kernel vector:
+
++ ~~Try to get raw code via pointer addressing.~~ Code is unified mapped.
++ Try to get kernel state via stack space.
+
+## Methodology - Implementation { visibility="uncounted" auto-animate=true transition="fade" transition-speed="fast"}
+
+~~Host vector:~~
+
+~~Use debugging tool `cuda-gdb`:~~
+
+GPU Kernel vector:
+
++ ~~Try to get raw code via pointer addressing.~~ Code is unified mapped.
++ ~~Try to get kernel state via stack space.~~ Stack is unified mapped.
+
+## Methodology - Implementation { visibility="uncounted" auto-animate=true transition="fade" transition-speed="fast"}
+
+~~Host vector:~~
+
+~~Use debugging tool `cuda-gdb`:~~
+
+GPU Kernel vector:
+
++ ~~Try to get raw code via pointer addressing.~~ Code is unified mapped.
++ ~~Try to get kernel state via stack space.~~ Stack is unified mapped.
++ Try to get kernel state via static space.
+
+
+## Methodology - Implementation { visibility="uncounted" auto-animate=true transition="fade" transition-speed="fast"}
+
+~~Host vector:~~
+
+~~Use debugging tool `cuda-gdb`:~~
+
+GPU Kernel vector:
+
++ ~~Try to get raw code via pointer addressing.~~ Code is unified mapped.
++ ~~Try to get kernel state via stack space.~~ Stack is unified mapped.
++ ~~Try to get kernel state via static space.~~ Statics area is unified mapped.
+
+
+## Methodology - Implementation { visibility="uncounted" auto-animate=true transition="fade" transition-speed="fast"}
+
+~~Host vector:~~
+
+~~Use debugging tool `cuda-gdb`:~~
+
+GPU Kernel vector:
+
++ ~~Try to get kernel state via stack space.~~ Stack is unified mapped.
++ ~~Try to get kernel state via static space.~~ Statics area is unified mapped.
++ Try to get heap data using out of bounds access.
+
+
+## Methodology - Implementation { visibility="uncounted" auto-animate=true transition="fade" transition-speed="fast"}
+
+~~Host vector:~~
+
+~~Use debugging tool `cuda-gdb`:~~
+
+GPU Kernel vector:
+
++ ~~Try to get kernel state via stack space.~~ Stack is unified mapped.
++ ~~Try to get kernel state via static space.~~ Statics area is unified mapped.
++ ~~Try to get heap data using out of bounds access.~~ Nope.
+
+
+## Methodology - Implementation { visibility="uncounted" auto-animate=true transition="fade" transition-speed="fast"}
+
+~~Host vector:~~
+
+~~Use debugging tool `cuda-gdb`:~~
+
+GPU Kernel vector:
+
++ ~~Try to get kernel state via static space.~~ Statics area is unified mapped.
++ ~~Try to get heap data using out of bounds access.~~ Nope.
++ Try to get heap data using on GPU malloc.
+
+
+## Methodology - Implementation { visibility="uncounted" auto-animate=true transition="fade" transition-speed="fast"}
+
+~~Host vector:~~
+
+~~Use debugging tool `cuda-gdb`:~~
+
+GPU Kernel vector:
+
++ ~~Try to get kernel state via static space.~~ Statics area is unified mapped.
++ ~~Try to get heap data using out of bounds access.~~ Nope.
++ ~~Try to get heap data using on GPU malloc.~~ Nope.
+
+
+## Methodology - Implementation { visibility="uncounted" auto-animate=true transition="fade" transition-speed="fast"}
+
+:::: {  .r-fit-text }
+
+~~Host vector:~~
+
+~~Allocate unified memory and read that.~~
+
+~~Use debugging tool `cuda-gdb`:~~
+
++ ~~Create a core-dump file of GPU.~~ Works, but will only dump allocated memory.
++ ~~Manually inspect the data using CLI.~~ Again only gives access to what I have mapped.
+
+GPU Kernel vector:
+
++ ~~Try to get raw code via pointer addressing.~~ Code is unified mapped.
++ ~~Try to get kernel state via stack space.~~ Stack is unified mapped.
++ ~~Try to get kernel state via static space.~~ Statics area is unified mapped.
++ ~~Try to get heap data using out of bounds access.~~ Nope.
++ ~~Try to get heap data using on GPU malloc.~~ Nope.
+
+::::
+
+## Methodology - Implementation { visibility="uncounted" auto-animate=true transition="fade" transition-speed="fast"}
+
+:::: {  .r-fit-text }
+
+~~Host vector:~~
+
+~~Allocate unified memory and read that.~~
+
+~~Use debugging tool `cuda-gdb`:~~
+
++ ~~Create a core-dump file of GPU.~~ Works, but will only dump allocated memory.
++ ~~Manually inspect the data using CLI.~~ Again only gives access to what I have mapped.
+
+~~GPU Kernel vector:~~
+
++ ~~Try to get raw code via pointer addressing.~~ Code is unified mapped.
++ ~~Try to get kernel state via stack space.~~ Stack is unified mapped.
++ ~~Try to get kernel state via static space.~~ Statics area is unified mapped.
++ ~~Try to get heap data using out of bounds access.~~ Nope.
++ ~~Try to get heap data using on GPU malloc.~~ Nope.
+
+::::
+
+## Methodology - Implementation { visibility="uncounted" auto-animate=true transition="fade" transition-speed="fast"}
+
+~~Host vector:~~
+
+~~GPU Kernel vector:~~
+
+## Methodology - Implementation { visibility="uncounted" auto-animate=true transition="fade" transition-speed="fast"}
+
+~~Host vector:~~
+
+~~GPU Kernel vector:~~
+
+?
+
+## Next Step
+
+
+:::: { .fragment .fade-right}
+
+:::: { .fragment .grow}
+
+
+:::: { .fragment .fade-out}
+
+### None 
+
+
+::::
+
+::::
+
+::::
+
+:::: { .fragment .fade-right}
+
+### Takeaway
+
+::::
+
+:::: { .fragment .fade-right}
+
+Security has improved rapidly.
+
+::::
+
+:::: { .fragment .fade-right}
+
+The information leak I was targeting was generally patched a little over a year ago.
+
+::::
+
+:::: { .fragment .fade-right .r-fit-text .hidden}
+
+I was _this_ close.
+
+::::
+
+# The Pivot
+
+- New Research Direction
+- Proposed Methodology
