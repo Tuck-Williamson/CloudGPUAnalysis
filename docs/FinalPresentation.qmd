@@ -5,6 +5,8 @@ author:
     affiliation: { -name: "College of Charleston" }
 institute: "College of Charleston"
 date: 2024-12-05
+date-format: full
+bibliography: bib.bibtex
 format:
   revealjs:
     slide-number: true
@@ -25,7 +27,7 @@ format:
 
 - Importance
 - Problem Statement
-- Research Abstract
+- Research Goal
 
 ::::
 
@@ -59,29 +61,47 @@ computationally intensive tasks & has become indispensable across various fields
 
 ## Background { transition="fade" transition-speed="fast"}
 
-### Security issues have been prevalent.
-
-:::: { .fade-right .incremental}
-
-1. paper TODO
-1. paper TODO
-1. paper TODO
-1. paper TODO
-
-::::
-
-## Background { transition="fade" transition-speed="fast"}
-
 ### Cloud GPU Service Industry
 
 :::: { .incremental }
 
   - Current market value ~3 **Billion**
   - Projected to grow to ~50 **Billion** by 2032
-  - This does not account for the value of what the service is producing for the market's clients!
+  - This **does not** account for the value of what the service is producing for the market's clients!
 
 ::::
 
+## Background { transition="fade" transition-speed="fast"}
+
+### Security issues have been prevalent.
+
+:::: {  .r-stack }
+
+:::: { .fade-right .incremental .r-fit-text }
+
+1. {CUDA} Leaks: Information Leakage in {GPU} Architectures [@start]
+2. The Process of Reverse Engineering GPU Malware and Provide Protection to GPUS [@RevEngGPUMal] 
+3. Cybercriminal sells tool to hide malware in AMD, NVIDIA GPUs [@crimSellGPUMal]
+4. Listening to LLM Responses Through Leaked GPU Local Memory [@leftovers]
+5. [@CVE-2024-0071] "... vulnerability may lead to code execution, denial of service, **escalation of privileges**, information disclosure, and data tampering."
+6. [@CVE-2024-0073] "... A successful exploit of this vulnerability may lead to code execution, denial of service, **escalation of privileges**, ..."
+7. [@CVE-2024-0074] "... a vulnerability where an attacker may access a memory location after the end of the buffer."
+8. [@CVE-2024-0077] "...allows a guest OS to allocate resources for which the guest OS **is not authorized**."
+
+::::
+
+:::: { .fade-up .fragment style="border-radius: 7px;padding: 30px;background: snow;"}
+
+Those CVEs are just the **High** severity entries for **one** patch 
+this year.
+
+[The patch had several more medium severity CVEs] 
+
+Most of these were from reviewing cited papers from one section out of **ten**
+from [@huq2024survey]!
+::::
+
+::::
 
 ## The Problem
 
@@ -140,7 +160,8 @@ Data from prior service users or co-users.
 + GPU 'kernel' code.
 + GPU kernel state.
   + Registers
-  + Stack
+  + Stack memory.
+  + Statics memory region.
 + GPU memory contents.
 
 ::::
@@ -154,16 +175,6 @@ Data from prior service users or co-users.
 * Overview of the technology.
 * Data Gathering Implementation
 * Results
-
-::::
-
-## Methodology {.hidden} 
-
-:::: { .incremental .fade-up }
-
-* Overview of the System
-* Overview of Host
-* Data Gathering Details
 
 ::::
 
@@ -208,10 +219,11 @@ Send the data to the central repository.
 ## Overview - Memory { transition="fade" transition-speed="fast"}
 
 
-![A Diagram of GPU 'Unified' Memory](img_3.png)
+![A Diagram of GPU 'Unified' Memory](img_4.png){ width="1200"}
 
 ```{.mermaid .hidden}
 %%| fig-cap: "A Diagram of GPU 'Unified' Memory"
+
 block-beta
     columns 8
 
@@ -239,38 +251,33 @@ block-beta
 
         space:5
         %% block:s1b
-            s1<[" "]>(y)
+            s1<["s<br>y<br>n<br>&nbsp;&nbsp;&nbsp;c&nbsp;&nbsp;&nbsp;"]>(y)
         %% end
         space:2
 
         %% block:s2b
-            s2<[" "]>(y)
+            s2<["s<br>y<br>n<br>&nbsp;&nbsp;&nbsp;c&nbsp;&nbsp;&nbsp;"]>(y)
         %% end
         %% block:s3b
-            s3<[" "]>(y)
+            s3<["s<br>y<br>n<br>&nbsp;&nbsp;&nbsp;c&nbsp;&nbsp;&nbsp;"]>(y)
         %% end
         space:2
-        
-        block:1:1
-            columns:1
-            a b c
-        end
     end
 
     space:1
     block:gm:5
         columns 10
 
-        g1["Private"]
-        g2["Private"]
-        g3["Private"]
-        u1["Universal"]
-        g4["Private"]
-        g5["Private"]
-        u2["Universal"]
-        u3["Universal"]
-        g6["Private"]
-        g7["Private"]
+        g1["General"]
+        g2["General"]
+        g3["General"]
+        u1["Unified&nbsp;"]
+        g4["General"]
+        g5["General"]
+        u2["Unified&nbsp;"]
+        u3["Unified&nbsp;"]
+        g6["General"]
+        g7["General"]
 
         space:5
         gml["GPU Memory"]
@@ -279,9 +286,15 @@ block-beta
     space:1
 
 %% u1 <==> 6
+
+classDef default font-weight:900,line-height:18px;
+classDef unified stroke:#f00,stroke-width:3px,fill:#fa0;
+
+class u1,u2,u3,6,9,10,s1,s2,s3 unified
+
 style hml fill:#0000,stroke:#0000;
 style hm fill:#0000,stroke:#0000;
-style gml fill:#0000,stroke:#0000;    
+style gml fill:#0000,stroke:#0000;
 ```
 
 ## Methodology - Implementation { auto-animate=true transition="fade" transition-speed="fast"}
@@ -330,7 +343,7 @@ Host vector:
 Use debugging tool `cuda-gdb`:
 
 + ~~Create a core-dump file of GPU.~~ Works, but will only dump allocated memory.
-+ Manually inspect the data using CLI.
++ Manually inspect the data using cuda-gdb commands.
 
 ## Methodology - Implementation { visibility="uncounted" auto-animate=true transition="fade" transition-speed="fast"}
 
@@ -341,7 +354,7 @@ Host vector:
 Use debugging tool `cuda-gdb`:
 
 + ~~Create a core-dump file of GPU.~~ Works, but will only dump allocated memory.
-+ ~~Manually inspect the data using CLI.~~ Again only gives access to what I have mapped.
++ ~~Manually inspect the data using cuda-gdb commands.~~ Again only gives access to what I have mapped.
 
 ## Methodology - Implementation { visibility="uncounted" auto-animate=true transition="fade" transition-speed="fast"}
 
@@ -474,7 +487,7 @@ GPU Kernel vector:
 ~~Use debugging tool `cuda-gdb`:~~
 
 + ~~Create a core-dump file of GPU.~~ Works, but will only dump allocated memory.
-+ ~~Manually inspect the data using CLI.~~ Again only gives access to what I have mapped.
++ ~~Manually inspect the data using cuda-gdb commands.~~ Again only gives access to what I have mapped.
 
 GPU Kernel vector:
 
@@ -497,7 +510,7 @@ GPU Kernel vector:
 ~~Use debugging tool `cuda-gdb`:~~
 
 + ~~Create a core-dump file of GPU.~~ Works, but will only dump allocated memory.
-+ ~~Manually inspect the data using CLI.~~ Again only gives access to what I have mapped.
++ ~~Manually inspect the data using cuda-gdb commands.~~ Again only gives access to what I have mapped.
 
 ~~GPU Kernel vector:~~
 
@@ -560,6 +573,12 @@ The information leak I was targeting was generally patched a little over a year 
 
 ::::
 
+:::: { .fragment .fade-right}
+
+LeftoverLocals: Listening to LLM Responses Through Leaked GPU Local Memory [@leftovers]
+
+::::
+
 :::: { .fragment .fade-right .r-fit-text .hidden}
 
 I was _this_ close.
@@ -570,3 +589,154 @@ I was _this_ close.
 
 - New Research Direction
 - Proposed Methodology
+
+## Pivot Options { auto-animate=true}
+
+Investigate Firmware for Signs of Tampering. 
+
+Power Consumption Analysis.
+
+Timing Attacks.
+
+Direct Code Analysis.
+
+## Pivot Options { auto-animate=true}
+
+
+:::: { .r-fit-text }
+
+Direct Code Analysis.
+
+::::
+
+## Direct Code Analysis { transition="convex" transition-speed="default" auto-animate=true}
+
+A recent research paper was published regarding malware code out in the open 
+on the **Hugging Face** service [@HFExploit].
+
+Additionally, there is more research on **Hugging Face** vulnerabilities [@HFVuln].
+
+
+## Direct Code Analysis { transition="convex" transition-speed="default" auto-animate=true}
+
+A recent research paper was published regarding malware code out in the open 
+on the **Hugging Face** service [@HFExploit].
+
+This paper analyzes projects hosted on Hugging Face that both use vulnerable serialization 
+techniques, and looked for projects that used those vulnerabilities to inject **malware**!
+
+Additionally, there is more research on **Hugging Face** vulnerabilities [@HFVuln].
+
+
+## Direct Code Analysis { transition="convex" transition-speed="default" auto-animate=true}
+
+A recent research paper was published regarding malware code out in the open 
+on the **Hugging Face** service [@HFExploit].
+
+This paper analyzes projects hosted on Hugging Face that both use vulnerable serialization 
+techniques, and looked for projects that used those vulnerabilities to inject **malware**!
+
+I plan to use some of its methodology to perform a similar analysis; however, 
+focusing instead on GPU kernel code to try and identify malicious code.
+
+Additionally, there is more research on **Hugging Face** vulnerabilities [@HFVuln].
+
+## Direct Code Analysis { transition="convex" transition-speed="default" auto-animate=true}
+
+A recent research paper was published regarding malware code out in the open 
+on the **Hugging Face** service [@HFExploit].
+
+:::: { .grow }
+
+Additionally, there is more research on **Hugging Face** vulnerabilities [@HFVuln].
+
+::::
+
+This paper analyzes projects on **Hugging Face** to link them to **GitHub** repos 
+and perform software supply-chain analysis on the projects to assess vulnerabilities.
+
+## Direct Code Analysis { transition="convex" transition-speed="default" auto-animate=true}
+
+A recent research paper was published regarding malware code out in the open 
+on the **Hugging Face** service [@HFExploit].
+
+:::: { .grow }
+
+Additionally, there is more research on **Hugging Face** vulnerabilities [@HFVuln].
+
+::::
+
+This paper analyzes projects on **Hugging Face** to link them to **GitHub** repos 
+and perform software supply-chain analysis on the projects to assess vulnerabilities.
+
+For my research pivot it highlights a method of analysis for projects on 
+**Hugging Face** to identify links to their **GitHub** code repos.
+
+## Research Questions
+
+
+:::: {  .r-fit-text}
+
+:::: { .incremental }
+
+1. Can we identify malicious kernel code?
+2. Can we find malicious kernel code in **Hugging Face** projects?
+3. If we find malicious kernel code can we link it to repos?
+   
+   If yes can we analyze:
+   1. History for attack vector development insight?
+   2. Forks for other usages?
+   3. Software supply-chain links if the repo is used in other projects?
+   4. Exposure based on popularity of the given **Hugging Face** project, 
+      **GitHub** repo, and linked projects/repos?
+
+::::
+
+::::
+
+## Challenges
+
+
+:::: { .r-fit-text }
+
+:::: { .fragment .fade-in-then-semi-out }
+
+1. Analysis Methodology 
+
+   How do we approach code analysis to identify malicious kernel code?
+
+   As far as my current literature reviews the available sample source will be miniscule.
+
+::::
+
+:::: { .fragment .fade-in-then-semi-out }
+
+2. Statistical Concerns
+   
+   Will there be anything to find? [@HFExploit sec. IV] studied 4,023 projects and identified ~13k files in those 
+   projects that were vulnerable.
+   
+   **Fourteen** files out of the ~13k were malicious. If exploiting GPUs for malware
+   is not highly prevalent we may have to drastically increase the sample size for the 
+   projects.
+
+   Additionally, the number of code files that contain kernel code we would anticipate to be **significantly** fewer. 
+
+::::
+
+:::: { .fragment .fade-in-then-semi-out }
+
+3. Linking Probability 
+    
+    For such a potentially small sample size how likely is it the developer(s) of the
+    malware would have a **GitHub** repo?
+    
+    On the other hand with a small sample set it may be easy to directly search **GitHub**
+    for anything found.
+
+::::
+
+::::
+
+
+# References
