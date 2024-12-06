@@ -9,6 +9,7 @@ date-format: full
 bibliography: bib.bibtex
 format:
   revealjs:
+    embed-resources: true
     slide-number: true
     preview-links: true
     transition: zoom
